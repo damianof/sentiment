@@ -1,6 +1,5 @@
-# Paths
-TAP = ./node_modules/.bin/tap
-JSHINT = ./node_modules/.bin/jshint
+ESLINT=./node_modules/.bin/eslint
+TAP=./node_modules/.bin/tap
 
 # ------------------------------------------------------------------------------
 
@@ -8,26 +7,27 @@ JSHINT = ./node_modules/.bin/jshint
 build:
 	node ./build/index.js
 
-# Governance tests
+# ------------------------------------------------------------------------------
+
 lint:
-	$(JSHINT) ./lib/*.js
-	$(JSHINT) ./build/*.js
-	$(JSHINT) ./test/**/*.js
+	$(ESLINT) ./lib/*.js
+	$(ESLINT) ./build/*.js
+	$(ESLINT) ./test/**/*.js
 
-# Unit tests
-unit:
-	$(TAP) ./test/unit/*.js
-
-# Benchmarks
-benchmark:
-	node test/benchmark/index.js
-
-# Run entire test suite
 test:
 	@make lint
-	@make unit
-	@make benchmark
+	$(TAP) ./test/{unit,integration}/*.js
 
 # ------------------------------------------------------------------------------
 
-.PHONY: build lint unit benchmark test
+coverage:
+	$(TAP) ./test/{integration,unit}/*.js --coverage --coverage-report=lcov
+
+# ------------------------------------------------------------------------------
+
+benchmark:
+	node ./test/benchmark/performance.js
+
+# ------------------------------------------------------------------------------
+
+.PHONY: build lint test coverage benchmark
